@@ -109,8 +109,8 @@ function render(): void {
         <div class="section-heading">
           <div><p class="eyebrow">YOUR WORKBENCH</p><h2 id="planner-title">The sprint contract</h2></div>
           <div class="file-actions">
-            <label class="button compact" for="import-file">Import JSON</label>
-            <input class="visually-hidden" id="import-file" type="file" accept="application/json,.json" />
+            <button class="button compact" type="button" data-action="import">Import JSON</button>
+            <input class="visually-hidden" id="import-file" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true" />
             <button class="button compact" data-action="export">Export JSON</button>
             <button class="text-button danger" data-action="reset">Clear map</button>
           </div>
@@ -307,6 +307,7 @@ app.addEventListener('click', (event) => {
   const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-action]');
   if (!button) return;
   const action = button.dataset.action;
+  if (action === 'import') document.querySelector<HTMLInputElement>('#import-file')?.click();
   if (action === 'add-prereq') addPrerequisite();
   if (action === 'add-exercise') addExercise();
   if (action === 'load-template') loadTemplate();

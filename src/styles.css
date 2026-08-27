@@ -193,7 +193,7 @@ input::placeholder, textarea::placeholder { color: #6b7067; opacity: 1; }
 .node-foot { min-height: 48px; justify-content: space-between; padding-top: 12px; border-top: 1px solid var(--concrete-2); color: var(--muted); font-size: .8rem; }
 .check, .toggle-kind { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--charcoal); font-weight: 700; }
 .check input, .toggle-kind input { width: 22px; min-height: 22px; accent-color: var(--moss); }
-.minutes-input { width: 76px; min-height: 40px; padding: 6px 8px; font-variant-numeric: tabular-nums; }
+.minutes-input { width: 76px; min-height: 44px; padding: 6px 8px; font-variant-numeric: tabular-nums; }
 .empty { min-height: 176px; padding: 24px; display: flex; flex-direction: column; justify-content: center; border: 2px dashed #73786e; background: #e8e5da; }
 .empty > span { font-size: 2rem; color: var(--moss); }
 .empty p { margin: 4px 0 0; color: var(--muted); }

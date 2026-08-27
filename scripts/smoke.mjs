@@ -9,7 +9,7 @@ page.on('console', (message) => { if (message.type() === 'error') errors.push(me
 await page.goto(url, { waitUntil: 'networkidle' });
 const requiredTouchTargets = [
   ['wordmark/home link', '.wordmark'],
-  ['Import JSON label-button', 'label[for="import-file"]'],
+  ['Import JSON button', '[data-action="import"]'],
   ['Export JSON button', '[data-action="export"]'],
   ['Clear map button', '[data-action="reset"]'],
   ['Terms footer link', 'footer a[href="/terms"]'],
@@ -25,6 +25,46 @@ await page.selectOption('#template', 'data-structures');
 await page.click('[data-action="load-template"]');
 if (await page.locator('.prereq-lane .node').count() !== 4) throw new Error('Template prerequisites did not load.');
 if (await page.locator('.target-lane .node').count() !== 1) throw new Error('Template target exercise did not load.');
+for (const [name, selector] of [
+  ['prerequisite estimate', '.prereq-lane .node .minutes-input'],
+  ['target estimate', '.target-lane .node .minutes-input'],
+]) {
+  const box = await page.locator(selector).first().boundingBox();
+  if (!box || box.width < 44 || box.height < 44) {
+    const measured = box ? `${box.width.toFixed(2)}×${box.height.toFixed(2)}px` : 'not visible';
+    throw new Error(`${name} does not meet the 44×44px mobile touch-target minimum (${measured}).`);
+  }
+}
+await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : undefined));
+let importReachedByTab = false;
+for (let step = 0; step < 32; step += 1) {
+  await page.keyboard.press('Tab');
+  importReachedByTab = await page.locator('[data-action="import"]').evaluate((element) => document.activeElement === element);
+  if (importReachedByTab) break;
+}
+if (!importReachedByTab) throw new Error('Import JSON is not reachable through the keyboard Tab sequence.');
+const importFocus = await page.locator('[data-action="import"]').evaluate((element) => {
+  const style = getComputedStyle(element);
+  return {
+    active: document.activeElement === element,
+    visible: element.matches(':focus-visible'),
+    outlineWidth: style.outlineWidth,
+    outlineStyle: style.outlineStyle,
+    box: element.getBoundingClientRect().toJSON(),
+  };
+});
+if (!importFocus.active || !importFocus.visible || importFocus.outlineStyle === 'none' || Number.parseFloat(importFocus.outlineWidth) < 3 || importFocus.box.width < 44 || importFocus.box.height < 44) {
+  throw new Error(`Import JSON does not expose its required visible keyboard focus state (${JSON.stringify(importFocus)}).`);
+}
+const hiddenImportTabIndex = await page.locator('#import-file').getAttribute('tabindex');
+if (hiddenImportTabIndex !== '-1') throw new Error('The hidden native Import JSON input must not create a Tab stop.');
+const fileChooser = page.waitForEvent('filechooser');
+await page.keyboard.press('Enter');
+await (await fileChooser).setFiles([]);
+await page.keyboard.press('Tab');
+if (!(await page.locator('[data-action="export"]').evaluate((element) => document.activeElement === element))) {
+  throw new Error('Tab from Import JSON did not move to Export JSON; the native file input may still be in the keyboard order.');
+}
 await page.check('.prereq-lane [data-node-field="known"]');
 await page.check('.target-lane [data-exercise-field="done"]');
 if (!(await page.locator('.checkpoint').getAttribute('class')).includes('achieved')) throw new Error('Checkpoint did not update.');
@@ -78,4 +118,4 @@ await page.goto(new URL('/privacy', url).href, { waitUntil: 'networkidle' });
 if (await page.locator('h1').count() !== 1) throw new Error('Privacy route has invalid h1 count.');
 await browser.close();
 if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
-console.log('Browser smoke: 390px touch targets, template, diagnostics, bounded estimates, invalid-date import recovery, persistence, offline shell, and legal route passed.');
+console.log('Browser smoke: 390px touch targets and visible Import JSON keyboard focus, template, diagnostics, bounded estimates, invalid-date import recovery, persistence, offline shell, and legal route passed.');
