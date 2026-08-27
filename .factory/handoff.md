@@ -1,6 +1,7 @@
 # Handoff — Prerequisite Sprint Map
 
-Work order: `prereq-sprint-map-build-1`  
+Work order: `prereq-sprint-map-build-1`
+
 Completed: 2026-08-27
 
 ## What was built
@@ -30,7 +31,8 @@ npm run audit:a11y -- http://127.0.0.1:4173
 node scripts/smoke.mjs
 ```
 
-Required build command: `npm run build`  
+Required build command: `npm run build`
+
 Deploy directory: `dist/` (contains `index.html` at its root)
 
 Verification completed against the production build:
