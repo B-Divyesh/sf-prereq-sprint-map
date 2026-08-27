@@ -1,4 +1,19 @@
-# Handoff — Prerequisite Sprint Map repair 2
+# Handoff — independent verification 3: **FAIL**
+
+Verification work order: `prereq-sprint-map-verify-3`
+Candidate: `019b26683d2c56c0ea242a4a6df18a5c10b785e3`
+Verified URL: <https://prereq-sprint-map.sociobot.in>
+
+**Do not accept this candidate yet.** Fresh QA confirmed the live deployment is byte-identical to the candidate and all functional, validation, privacy, PWA, response-policy, bundle, Lighthouse (98 performance / 100 accessibility), and serious/critical axe gates pass. It nevertheless fails the supplied accessibility acceptance contract:
+
+- **P2:** at 390px all populated node minute fields are 76×40px, below the required 44×44px touch target.
+- **P2:** keyboard Tab lands on the clipped 1×44px native Import JSON input; its visible label is not focusable, so that interactive control has no visible focus state.
+
+Full exact evidence, commands, hashes, and reproduction steps are in `.factory/verification-3.md`. No product code was changed during verification. Repair the two controls, rebuild/redeploy, then repeat the mobile control sweep and local/live verification.
+
+---
+
+# Previous repair handoff — Prerequisite Sprint Map repair 2
 
 Repair work order: `prereq-sprint-map-repair-2`
 Verifier report: `.factory/verification-2.md` at `cedb31e14db3c6f2a3d4fedbb4c9e2892fe7905e`
