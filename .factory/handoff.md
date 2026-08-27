@@ -44,6 +44,7 @@ Required deploy directory: `dist/` (static site; `index.html` is at its root).
 | Live repair regression | `https://prereq-sprint-map.sociobot.in` served the repaired `index-B0jfDiQ1.js`; live browser smoke passed both 10,001-minute clamps, invalid-date no-persistence/no-success recovery, PWA offline, and legal route |
 | Live accessibility / URL check | Live axe: 0 violations (0 serious/critical); `verify-url.sh` had no console/page errors and confirmed title, `lang=en`, one `h1`, main, image alt text, and labeled buttons |
 | Performance budget | Production JS: 26.70 KB raw / 9.27 KB gzip; CSS: 13.58 KB raw / 3.91 KB gzip; no web fonts. All are within the static-product budgets. |
+| Lighthouse | A current live run was attempted with the installed Chromium, but Lighthouse crashed its tab in this container before emitting a report. No score is claimed; the successful browser checks and measured bundle budgets above are the available release evidence. |
 
 The repair does not change the concrete-and-moss visual system, original image provenance, keyboard handling, reduced-motion policy, privacy posture, or local-first PWA design.
 
