@@ -1,11 +1,12 @@
 import { chromium } from 'playwright';
 
+const url = process.argv[2] || 'http://127.0.0.1:4173';
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 const errors = [];
 page.on('pageerror', (error) => errors.push(String(error)));
 page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-await page.goto('http://127.0.0.1:4173', { waitUntil: 'networkidle' });
+await page.goto(url, { waitUntil: 'networkidle' });
 await page.selectOption('#template', 'data-structures');
 await page.click('[data-action="load-template"]');
 if (await page.locator('.prereq-lane .node').count() !== 4) throw new Error('Template prerequisites did not load.');
@@ -59,7 +60,7 @@ await page.reload({ waitUntil: 'domcontentloaded' });
 const offlineMain = await page.locator('#main').count();
 if (offlineMain !== 1) throw new Error(`Offline shell failed (main: ${offlineMain}).`);
 await page.context().setOffline(false);
-await page.goto('http://127.0.0.1:4173/privacy', { waitUntil: 'networkidle' });
+await page.goto(new URL('/privacy', url).href, { waitUntil: 'networkidle' });
 if (await page.locator('h1').count() !== 1) throw new Error('Privacy route has invalid h1 count.');
 await browser.close();
 if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);

@@ -1,6 +1,6 @@
 # Handoff — Prerequisite Sprint Map repair
 
-## Status: repaired and verified
+## Status: repaired, verified, and deployed
 
 Repair work order: `prereq-sprint-map-repair-1`
 Base: `65dd64fdb5310487ed7809b8b01728786e4e76a9` (independent-report commit)
@@ -40,7 +40,9 @@ Required deploy directory: `dist/` (static site; `index.html` is at its root).
 | Invalid import recovery | Browser smoke verified `2026-02-30` has an explanatory error, no success copy, and no local-storage change |
 | Local browser/offline/PWA | `node scripts/smoke.mjs` passed: template, diagnostics, target completion, bounded estimates, invalid-date recovery, persistence, service-worker offline shell, and legal route |
 | Accessibility | Local axe: 0 violations (0 serious/critical); `verify-url.sh` found title, `lang=en`, one `h1`, main landmark, image alt text, no unlabeled buttons, and no console/page errors |
-| Live URL baseline | `https://prereq-sprint-map.sociobot.in` returned 200; live axe had 0 violations and URL verification had no console/page errors before this repair was submitted for static deployment |
+| Standard static deploy | Azure Static Web Apps deployment `08c0fd6c-3299-4b9a-a331-c9dddb9689f0` succeeded to the production host; custom domain was `Ready` and HTTPS returned 200 |
+| Live repair regression | `https://prereq-sprint-map.sociobot.in` served the repaired `index-B0jfDiQ1.js`; live browser smoke passed both 10,001-minute clamps, invalid-date no-persistence/no-success recovery, PWA offline, and legal route |
+| Live accessibility / URL check | Live axe: 0 violations (0 serious/critical); `verify-url.sh` had no console/page errors and confirmed title, `lang=en`, one `h1`, main, image alt text, and labeled buttons |
 | Performance budget | Production JS: 26.70 KB raw / 9.27 KB gzip; CSS: 13.58 KB raw / 3.91 KB gzip; no web fonts. All are within the static-product budgets. |
 
 The repair does not change the concrete-and-moss visual system, original image provenance, keyboard handling, reduced-motion policy, privacy posture, or local-first PWA design.
@@ -49,4 +51,4 @@ The repair does not change the concrete-and-moss visual system, original image p
 
 - No accounts, tracking, cloud sync, or remote learner data are used; maps remain in browser local storage and can be exported as JSON.
 - Templates remain explicitly bounded starting points, not universal prerequisite claims.
-- After the standard static deployment completes, repeat the live regression path for the two repaired validation cases as part of release monitoring.
+- The successful live repair regression covers the two defects reported against the original candidate; routine release monitoring can repeat it on future changes.
