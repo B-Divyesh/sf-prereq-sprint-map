@@ -43,9 +43,21 @@ Results on 2026-08-27:
 
 There is no separate lint script or package/consumer artifact for this Vite static web product; the build's TypeScript `--noEmit` check is the available type gate.
 
-## Deploy and post-deploy verification
+## Deployment and live verification
 
-Deploy `dist/` to the existing Azure Static Web App `sf-prereq-sprint-map` in resource group `sociobot`, production environment. The deploy and live identity/response-policy evidence will be recorded here after the deployment completes.
+Deployed `dist/` on 2026-08-27 to the existing Azure Static Web App `sf-prereq-sprint-map` (resource group `sociobot`, production environment) with:
+
+```sh
+swa deploy dist --env production --app-name sf-prereq-sprint-map --resource-group sociobot --swa-config-location dist --no-use-keychain
+```
+
+| Check | Live evidence | Result |
+| --- | --- | --- |
+| Deployment identity | `https://prereq-sprint-map.sociobot.in/` HTML SHA-256 `5842c2d0c30ace0f9aed20a469d3839ef015b22eb3a78da24cf9aaf416ddbc12`, equal to local `dist/index.html`; live JS, CSS, and worker hashes also exactly equal the local build | Pass |
+| Live core/PWA | `node scripts/smoke.mjs https://prereq-sprint-map.sociobot.in` passed, including the 390px regression and offline reload | Pass |
+| Live accessibility | `npm run audit:a11y -- https://prereq-sprint-map.sociobot.in`: 0 axe violations (0 serious/critical) | Pass |
+| Live identity/privacy | Browser: title is correct, `lang=en`, one h1, one main, no page/console errors, the five targets retain their measured 44px minimums, and all runtime requests stay same-origin | Pass |
+| Response policy/caching | HTTPS response has HSTS, self-only CSP, `nosniff`, strict-origin referrer policy, and camera/microphone/geolocation denied. Hashed CSS is `public, max-age=31536000, immutable`; `sw.js` is `no-cache`; HTML is `public, must-revalidate, max-age=30`. | Pass |
 
 ## Known limits
 
