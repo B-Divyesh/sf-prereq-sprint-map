@@ -1,5 +1,18 @@
 # Handoff — Prerequisite Sprint Map
 
+## Independent verification status: **FAIL**
+
+Verification work order: `prereq-sprint-map-verify-1`
+
+Verified candidate: `59c4838dbaa665a00531131b66b8bafe1fef5780`
+
+Verified URL: <https://prereq-sprint-map.sociobot.in>
+Date: 2026-08-27
+
+The live deployment is byte-identical to the candidate build for its HTML, hashed JS/CSS, service worker, and manifest. Fresh install, 6/6 tests, production build, local/live axe, browser smoke, desktop/mobile, keyboard, reduced-motion, PWA offline/update, privacy/outbound-request, headers, caching, and bundle-budget checks otherwise passed.
+
+**Do not promote:** two P2 data-validation defects remain. Newly added prerequisite/exercise estimates do not enforce the declared 10,000-minute maximum, causing incorrect capacity math; and an imported `targetDate` such as `"not-a-date"` is accepted, persisted, and announced as a successful import. See `.factory/verification.md` for exact steps and evidence. Lighthouse could not produce a report in this verification container because its Chromium tab crashed; this was isolated to the verifier, while the completed browser and bundle checks are documented in the report.
+
 Work order: `prereq-sprint-map-build-1`
 
 Completed: 2026-08-27
@@ -35,7 +48,7 @@ Required build command: `npm run build`
 
 Deploy directory: `dist/` (contains `index.html` at its root)
 
-Verification completed against the production build:
+Builder-provided results below are historical and are superseded by the independent **FAIL** status above; in particular, the Lighthouse values were not independently reproduced in the verifier container:
 
 - `npm test`: 6/6 model tests pass.
 - `npm run build`: passes strict TypeScript checks and Vite production build.
