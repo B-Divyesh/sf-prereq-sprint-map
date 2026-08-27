@@ -36,6 +36,10 @@ export type Capacity = {
   isPast: boolean;
 };
 
+export const MIN_ESTIMATE_MINUTES = 5;
+export const MAX_ESTIMATE_MINUTES = 10_000;
+const DEFAULT_ESTIMATE_MINUTES = 30;
+
 export const emptyPlan = (): Plan => ({
   version: 1,
   target: '',
@@ -86,6 +90,9 @@ export function validatePlan(value: unknown): Plan {
   if (item.version !== 1 || typeof item.target !== 'string' || typeof item.targetDate !== 'string') {
     throw new Error('This sprint map uses an unsupported format.');
   }
+  if (!isValidTargetDate(item.targetDate)) {
+    throw new Error('This sprint map has an invalid target date.');
+  }
   if (!Array.isArray(item.prerequisites) || !Array.isArray(item.exercises)) {
     throw new Error('This sprint map is missing its lanes.');
   }
@@ -106,9 +113,25 @@ export function validatePlan(value: unknown): Plan {
     hoursPerWeek: clampNumber(item.hoursPerWeek, 0.5, 80, 5),
     sessionMinutes: clampNumber(item.sessionMinutes, 10, 240, 30),
     assumption: typeof item.assumption === 'string' ? item.assumption : '',
-    prerequisites: item.prerequisites.map((node) => ({ ...node, minutes: clampNumber(node.minutes, 5, 10_000, 30) })),
-    exercises: item.exercises.map((node) => ({ ...node, minutes: clampNumber(node.minutes, 5, 10_000, 30) })),
+    prerequisites: item.prerequisites.map((node) => ({ ...node, minutes: clampEstimateMinutes(node.minutes) })),
+    exercises: item.exercises.map((node) => ({ ...node, minutes: clampEstimateMinutes(node.minutes) })),
   };
+}
+
+/** Keeps every estimate within the sprint contract, regardless of its entry point. */
+export function clampEstimateMinutes(value: unknown): number {
+  return clampNumber(value, MIN_ESTIMATE_MINUTES, MAX_ESTIMATE_MINUTES, DEFAULT_ESTIMATE_MINUTES);
+}
+
+export function isValidTargetDate(value: string): boolean {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (year < 1 || month < 1 || month > 12 || day < 1) return false;
+  const daysInMonth = [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= daysInMonth[month - 1];
 }
 
 export function completion(plan: Plan): { completed: number; total: number; targetStarted: boolean } {
@@ -124,6 +147,10 @@ function parseLocalDate(value: string): Date {
   const [year, month, day] = value.split('-').map(Number);
   if (!year || !month || !day) return new Date(0);
   return new Date(year, month - 1, day);
+}
+
+function isLeapYear(year: number): boolean {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
 }
 
 function clampNumber(value: unknown, min: number, max: number, fallback: number): number {

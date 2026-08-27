@@ -16,8 +16,42 @@ if (!(await page.locator('.checkpoint').getAttribute('class')).includes('achieve
 await page.fill('#new-exercise', 'Compare two traversal orders');
 await page.press('#new-exercise', 'Enter');
 if (await page.locator('.target-lane .node').count() !== 2) throw new Error('Keyboard add failed.');
+await page.fill('#new-exercise', 'Bounded target estimate');
+await page.fill('#new-exercise-minutes', '10001');
+await page.click('[data-action="add-exercise"]');
+if (await page.locator('.target-lane [data-exercise-field="minutes"]').last().inputValue() !== '10000') {
+  throw new Error('New exercise estimate exceeded the 10,000-minute maximum.');
+}
+await page.fill('#new-prereq', 'Bounded prerequisite estimate');
+await page.fill('#new-prereq-minutes', '10001');
+await page.click('[data-action="add-prereq"]');
+if (await page.locator('.prereq-lane [data-node-field="minutes"]').last().inputValue() !== '10000') {
+  throw new Error('New prerequisite estimate exceeded the 10,000-minute maximum.');
+}
+const savedBeforeInvalidImport = await page.evaluate(() => localStorage.getItem('prereq-sprint-map:v1'));
+await page.setInputFiles('#import-file', {
+  name: 'invalid-target-date.json',
+  mimeType: 'application/json',
+  buffer: Buffer.from(JSON.stringify({
+    version: 1,
+    target: 'Invalid import',
+    targetDate: '2026-02-30',
+    hoursPerWeek: 5,
+    sessionMinutes: 30,
+    assumption: '',
+    prerequisites: [],
+    exercises: [],
+  })),
+});
+await page.waitForFunction(() => document.querySelector('.status-live')?.textContent?.includes('invalid target date'));
+if ((await page.locator('.status-live').textContent())?.includes('Map imported and saved')) {
+  throw new Error('Invalid date import announced success.');
+}
+if (await page.evaluate(() => localStorage.getItem('prereq-sprint-map:v1')) !== savedBeforeInvalidImport) {
+  throw new Error('Invalid date import was persisted.');
+}
 await page.reload({ waitUntil: 'networkidle' });
-if (await page.locator('.target-lane .node').count() !== 2) throw new Error('Local persistence failed.');
+if (await page.locator('.target-lane .node').count() !== 3) throw new Error('Local persistence failed.');
 await page.evaluate(() => navigator.serviceWorker.ready);
 await page.reload({ waitUntil: 'networkidle' });
 await page.context().setOffline(true);
@@ -29,4 +63,4 @@ await page.goto('http://127.0.0.1:4173/privacy', { waitUntil: 'networkidle' });
 if (await page.locator('h1').count() !== 1) throw new Error('Privacy route has invalid h1 count.');
 await browser.close();
 if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
-console.log('Browser smoke: template, diagnostics, target completion, keyboard add, persistence, offline shell, and legal route passed.');
+console.log('Browser smoke: template, diagnostics, bounded estimates, invalid-date import recovery, persistence, offline shell, and legal route passed.');

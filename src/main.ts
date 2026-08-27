@@ -1,5 +1,5 @@
 import './styles.css';
-import { calculateCapacity, completion, emptyPlan, validatePlan, type Plan, type Prerequisite } from './model';
+import { calculateCapacity, clampEstimateMinutes, completion, emptyPlan, validatePlan, type Plan, type Prerequisite } from './model';
 import { templates } from './templates';
 
 const STORAGE_KEY = 'prereq-sprint-map:v1';
@@ -285,7 +285,7 @@ app.addEventListener('change', async (event) => {
     const found = findNode(target);
     if (!found) return;
     const node = plan.prerequisites[found.index];
-    if (nodeField === 'minutes') node.minutes = Math.min(10_000, Math.max(5, numericValue(target as HTMLInputElement, 30)));
+    if (nodeField === 'minutes') node.minutes = clampEstimateMinutes(numericValue(target as HTMLInputElement, 30));
     else if (nodeField === 'known' || nodeField === 'done' || nodeField === 'required') node[nodeField] = (target as HTMLInputElement).checked;
     else if (nodeField === 'title') node.title = target.value;
     update(nodeField === 'known' && node.known ? 'Diagnostic updated. This estimate is no longer counted.' : '');
@@ -296,7 +296,7 @@ app.addEventListener('change', async (event) => {
     const index = findExercise(target);
     if (index < 0) return;
     const exercise = plan.exercises[index];
-    if (exerciseField === 'minutes') exercise.minutes = Math.min(10_000, Math.max(5, numericValue(target as HTMLInputElement, 30)));
+    if (exerciseField === 'minutes') exercise.minutes = clampEstimateMinutes(numericValue(target as HTMLInputElement, 30));
     else if (exerciseField === 'done') exercise.done = (target as HTMLInputElement).checked;
     else if (exerciseField === 'title') exercise.title = target.value;
     update(exerciseField === 'done' && exercise.done ? 'Target exercise completed. You crossed into the subject.' : '');
@@ -334,7 +334,7 @@ function addPrerequisite(): void {
     document.querySelector<HTMLInputElement>('#new-prereq')?.focus();
     return;
   }
-  plan.prerequisites.push({ id: id(), title, minutes: Math.max(5, minutes), required: true, known: false, done: false });
+  plan.prerequisites.push({ id: id(), title, minutes: clampEstimateMinutes(minutes), required: true, known: false, done: false });
   update(`${title} added as a required blocker. Change it to optional if it is only helpful.`);
   document.querySelector<HTMLInputElement>('#new-prereq')?.focus();
 }
@@ -348,7 +348,7 @@ function addExercise(): void {
     document.querySelector<HTMLInputElement>('#new-exercise')?.focus();
     return;
   }
-  plan.exercises.push({ id: id(), title, minutes: Math.max(5, minutes), done: false });
+  plan.exercises.push({ id: id(), title, minutes: clampEstimateMinutes(minutes), done: false });
   update(`${title} added to the start-now lane.`);
   document.querySelector<HTMLInputElement>('#new-exercise')?.focus();
 }

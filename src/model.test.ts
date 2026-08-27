@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCapacity, completion, datePlusDays, emptyPlan, validatePlan, type Plan } from './model';
+import { calculateCapacity, clampEstimateMinutes, completion, datePlusDays, emptyPlan, validatePlan, type Plan } from './model';
 
 const fixedNow = new Date(2026, 7, 27, 12);
 
@@ -55,6 +55,32 @@ describe('plan boundaries', () => {
     const parsed = validatePlan(raw);
     expect(parsed.hoursPerWeek).toBe(80);
     expect(parsed.sessionMinutes).toBe(10);
+  });
+
+  it('keeps estimates inside the declared five to 10,000 minute contract', () => {
+    expect(clampEstimateMinutes(5)).toBe(5);
+    expect(clampEstimateMinutes(10_000)).toBe(10_000);
+    expect(clampEstimateMinutes(10_001)).toBe(10_000);
+    expect(clampEstimateMinutes(4)).toBe(5);
+
+    const raw = samplePlan();
+    raw.prerequisites[0].minutes = 10_001;
+    raw.exercises[0].minutes = 10_000;
+    const parsed = validatePlan(raw);
+    expect(parsed.prerequisites[0].minutes).toBe(10_000);
+    expect(parsed.exercises[0].minutes).toBe(10_000);
+  });
+
+  it.each(['not-a-date', '2026-02-29', '2026-02-30', '2026-2-01', '2026-13-01', '2026-00-01'])(
+    'rejects malformed imported target date %s',
+    (targetDate) => {
+      expect(() => validatePlan({ ...samplePlan(), targetDate })).toThrow('invalid target date');
+    },
+  );
+
+  it('accepts a valid leap-day target date from an import', () => {
+    const parsed = validatePlan({ ...samplePlan(), targetDate: '2028-02-29' });
+    expect(parsed.targetDate).toBe('2028-02-29');
   });
 
   it('tracks the target start independently from prerequisites', () => {

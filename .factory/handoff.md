@@ -1,37 +1,20 @@
-# Handoff — Prerequisite Sprint Map
+# Handoff — Prerequisite Sprint Map repair
 
-## Independent verification status: **FAIL**
+## Status: repaired and verified
 
-Verification work order: `prereq-sprint-map-verify-1`
-
-Verified candidate: `59c4838dbaa665a00531131b66b8bafe1fef5780`
-
-Verified URL: <https://prereq-sprint-map.sociobot.in>
+Repair work order: `prereq-sprint-map-repair-1`
+Base: `65dd64fdb5310487ed7809b8b01728786e4e76a9` (independent-report commit)
+Candidate identified by the report: `59c4838dbaa665a00531131b66b8bafe1fef5780`
 Date: 2026-08-27
 
-The live deployment is byte-identical to the candidate build for its HTML, hashed JS/CSS, service worker, and manifest. Fresh install, 6/6 tests, production build, local/live axe, browser smoke, desktop/mobile, keyboard, reduced-motion, PWA offline/update, privacy/outbound-request, headers, caching, and bundle-budget checks otherwise passed.
+## What changed
 
-**Do not promote:** two P2 data-validation defects remain. Newly added prerequisite/exercise estimates do not enforce the declared 10,000-minute maximum, causing incorrect capacity math; and an imported `targetDate` such as `"not-a-date"` is accepted, persisted, and announced as a successful import. See `.factory/verification.md` for exact steps and evidence. Lighthouse could not produce a report in this verification container because its Chromium tab crashed; this was isolated to the verifier, while the completed browser and bundle checks are documented in the report.
+- Added one model-level estimate clamp for the declared 5–10,000 minute contract. New prerequisite and target-exercise flows, existing edits, and imports now all use it, so a new value of `10001` persists and contributes to capacity as `10000`.
+- Added strict `YYYY-MM-DD` calendar-date validation to import validation, including month bounds and leap years. Values such as `not-a-date`, `2026-02-30`, and non-zero-padded dates are rejected before assignment, local-storage persistence, or the import-success announcement.
+- Added model boundary regressions for the estimate limit, import estimate normalization, malformed/non-leap dates, and a valid leap day.
+- Extended the production browser smoke test to exercise both new-node limit paths and verify that an invalid imported date neither announces success nor overwrites saved data.
 
-Work order: `prereq-sprint-map-build-1`
-
-Completed: 2026-08-27
-
-## What was built
-
-- A production Vite + vanilla TypeScript static application in `dist/`.
-- An editable sprint contract with target topic, date, weekly hours, session length, and explicit scope assumptions.
-- Two concurrent lanes: real target-topic exercises (“Start now”) and bounded prerequisite nodes.
-- Per-prerequisite required/optional classification, “I can do this” diagnostic, practiced state, estimates, keyboard-safe reordering, deletion, and 10-second Undo.
-- Date-aware capacity math for days, available minutes/sessions, remaining prerequisite and target work, margin, and actionable over-capacity guidance.
-- Three editable subject examples with assumption statements: data structures, SQL queries, and Git collaboration.
-- A visible checkpoint celebrating a target exercise completed before optional prerequisites—the brief's success behavior.
-- Local-only persistence, JSON import/export, confirmed reset, storage error recovery copy, and no accounts or analytics.
-- Installable PWA shell with versioned caching, offline fallback, cache cleanup, and offline status.
-- Responsive 390px-first lane ordering, print treatment, full keyboard controls, visible focus, reduced-motion handling, and semantic landmarks.
-- Client-side `/privacy` and `/terms` pages plus Azure Static Web Apps navigation fallback, security headers, cache headers, robots file, and sitemap.
-- A product-specific brutalist concrete-and-moss system documented in `.factory/design.md`.
-- One original Azure OpenAI illustration. The source, generated prompt sidecar, responsive WebP derivatives, and provenance are retained; the mobile derivative is about 50 KB and desktop derivative about 200 KB.
+Capacity arithmetic itself was not changed; its original day-count, availability, and completed/known-work behavior remains covered by tests.
 
 ## Run and verify
 
@@ -44,33 +27,26 @@ npm run audit:a11y -- http://127.0.0.1:4173
 node scripts/smoke.mjs
 ```
 
-Required build command: `npm run build`
+Required deploy directory: `dist/` (static site; `index.html` is at its root).
 
-Deploy directory: `dist/` (contains `index.html` at its root)
+## Verification recorded
 
-Builder-provided results below are historical and are superseded by the independent **FAIL** status above; in particular, the Lighthouse values were not independently reproduced in the verifier container:
+| Check | Result |
+| --- | --- |
+| Clean install | `npm ci` passed; 0 vulnerabilities reported |
+| Model regressions | `npm test`: 14/14 passed |
+| Type check and production build | `npm run build` passed and generated `dist/` |
+| New estimate boundaries | Browser smoke verified new prerequisite and exercise values of `10001` render as `10000` |
+| Invalid import recovery | Browser smoke verified `2026-02-30` has an explanatory error, no success copy, and no local-storage change |
+| Local browser/offline/PWA | `node scripts/smoke.mjs` passed: template, diagnostics, target completion, bounded estimates, invalid-date recovery, persistence, service-worker offline shell, and legal route |
+| Accessibility | Local axe: 0 violations (0 serious/critical); `verify-url.sh` found title, `lang=en`, one `h1`, main landmark, image alt text, no unlabeled buttons, and no console/page errors |
+| Live URL baseline | `https://prereq-sprint-map.sociobot.in` returned 200; live axe had 0 violations and URL verification had no console/page errors before this repair was submitted for static deployment |
+| Performance budget | Production JS: 26.70 KB raw / 9.27 KB gzip; CSS: 13.58 KB raw / 3.91 KB gzip; no web fonts. All are within the static-product budgets. |
 
-- `npm test`: 6/6 model tests pass.
-- `npm run build`: passes strict TypeScript checks and Vite production build.
-- Browser smoke: template load, diagnostic check, target completion, keyboard add, local persistence, offline shell, and legal route pass.
-- Factory `verify-url.sh`: title present, `lang="en"`, exactly one h1, main landmark, all image alt text present, no unlabeled buttons, no console/page errors.
-- Axe/Playwright at 390×844: 0 violations (therefore 0 serious/critical).
-- Lighthouse mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100.
-- Lighthouse lab metrics: LCP 1.5s, CLS 0, Total Blocking Time 60ms. INP is not available in a no-interaction lab run; the 60ms TBT is well below the 200ms responsiveness budget.
-- Initial application JavaScript: 26.36 KB raw / 9.11 KB gzip (budget ≤200 KB).
-- CSS: 13.58 KB raw / 3.91 KB gzip (budget ≤50 KB).
-- Fonts: 0 KB; system families only (budget ≤120 KB).
-- Hero: 50 KB at 720px and 200 KB at 1280px (budget ≤300 KB mobile).
+The repair does not change the concrete-and-moss visual system, original image provenance, keyboard handling, reduced-motion policy, privacy posture, or local-first PWA design.
 
-## Known scope limits
+## Known limits / next steps
 
-- The product intentionally does not generate curriculum, assess actual proficiency, host courses, or give credential advice; learner checks are self-diagnostics.
-- Templates are narrow, assumption-labeled starting points rather than claims of universal sufficiency.
-- Maps sync only through explicit JSON export/import. This is the privacy-first behavior requested by the brief; there is no account or cross-device cloud store.
-- The service worker updates the cached shell on its next install/activation. A first production page load must finish once before offline use.
-
-## Suggested next steps
-
-- Test the success metric with consenting adult learners: target-exercise completion while any optional prerequisite remains open.
-- Add community-reviewed JSON templates only after their assumptions, target exercise, and scope are editorially checked.
-- Use field data—not added curriculum breadth—to tune default capacity and session estimates.
+- No accounts, tracking, cloud sync, or remote learner data are used; maps remain in browser local storage and can be exported as JSON.
+- Templates remain explicitly bounded starting points, not universal prerequisite claims.
+- After the standard static deployment completes, repeat the live regression path for the two repaired validation cases as part of release monitoring.
