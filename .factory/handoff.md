@@ -1,35 +1,21 @@
-# Handoff — independent verification 3: **FAIL**
+# Handoff — repair 3: controls restored
 
-Verification work order: `prereq-sprint-map-verify-3`
-Candidate: `019b26683d2c56c0ea242a4a6df18a5c10b785e3`
-Verified URL: <https://prereq-sprint-map.sociobot.in>
-
-**Do not accept this candidate yet.** Fresh QA confirmed the live deployment is byte-identical to the candidate and all functional, validation, privacy, PWA, response-policy, bundle, Lighthouse (98 performance / 100 accessibility), and serious/critical axe gates pass. It nevertheless fails the supplied accessibility acceptance contract:
-
-- **P2:** at 390px all populated node minute fields are 76×40px, below the required 44×44px touch target.
-- **P2:** keyboard Tab lands on the clipped 1×44px native Import JSON input; its visible label is not focusable, so that interactive control has no visible focus state.
-
-Full exact evidence, commands, hashes, and reproduction steps are in `.factory/verification-3.md`. No product code was changed during verification. Repair the two controls, rebuild/redeploy, then repeat the mobile control sweep and local/live verification.
-
----
-
-# Previous repair handoff — Prerequisite Sprint Map repair 2
-
-Repair work order: `prereq-sprint-map-repair-2`
-Verifier report: `.factory/verification-2.md` at `cedb31e14db3c6f2a3d4fedbb4c9e2892fe7905e`
-Candidate under repair: `a648b567c6efefc3419118efcca28d31c62bf6d2`
+Repair work order: `prereq-sprint-map-repair-3`
+Verifier report repaired: `.factory/verification-3.md` at `e72789c55cf36f4548b0070718d18d315f489535`
+Original candidate: `019b26683d2c56c0ea242a4a6df18a5c10b785e3`
+Repair commit: `225377d fix: restore accessible planner controls`
+Live URL: <https://prereq-sprint-map.sociobot.in>
 
 ## What changed
 
-- Repaired the five 390px touch targets reported by independent QA without changing the planner's behavior or visual direction.
-  - The wordmark/home link is now an inline-flex control with a 44px minimum height and width.
-  - Header and footer links have a 44px minimum width as well as height, so the short “Terms” link is reliably tappable.
-  - Compact file controls and the text-only “Clear map” action no longer override the global 44px control minimum with a 40px height.
-- Added an exact browser regression to `scripts/smoke.mjs`. At the required 390×844 viewport it measures the wordmark, Import JSON label-button, Export JSON, Clear map, and Terms link and fails below 44×44px before continuing through the existing user journey.
+Both release-blocking P2 accessibility defects from independent verification 3 are repaired without changing the planner's researched job, template assumptions, local-first storage model, PWA behavior, or concrete-and-moss visual system.
 
-The concrete-and-moss system, local-first storage, data validation repairs, PWA behavior, keyboard behavior, responsive lane ordering, original image asset, and static Azure deployment class are unchanged.
+- Populated prerequisite and target estimate controls now have a `44px` minimum height. The 76px-wide controls are therefore at least 76×44 CSS px at 390px.
+- Import is now a real, labeled `<button type="button">` in the keyboard order. Activating it with Enter opens the same native JSON file chooser. The programmatic file input remains visually hidden, is removed from the Tab order with `tabindex="-1"`, and is hidden from the accessibility tree; import validation and recovery behavior are unchanged.
+- `scripts/smoke.mjs` now has exact 390×844 regressions for prerequisite and target minute-field dimensions, the visible 3px focus state on Import JSON reached by actual Tab traversal, Enter activation of its file chooser, and the next Tab stop being Export JSON rather than the hidden native input.
+- Playwright is pinned to `1.58.2`, matching the preinstalled browser used for browser verification.
 
-## Local verification
+## Clean local verification
 
 Run from a clean checkout:
 
@@ -42,25 +28,26 @@ node scripts/smoke.mjs
 npm run audit:a11y -- http://127.0.0.1:4173
 ```
 
-Results on 2026-08-27:
+Results recorded on 2026-08-27:
 
 | Check | Evidence | Result |
 | --- | --- | --- |
-| Clean install | `npm ci`: 59 packages installed; 0 vulnerabilities | Pass |
-| Unit/type/build | `npm test`: 14/14; `npm run build` (`tsc --noEmit` + Vite) | Pass |
-| Static output/budget | `dist/` contains root `index.html`; JS 26.70 KB raw / 9.27 KB gzip; CSS 13.61 KB raw / 3.91 KB gzip; no web fonts | Pass |
-| Exact mobile regression | 390px: wordmark 190×44; Import 106.58×44; Export 106.58×44; Clear 106.70×44; Terms 44×44 CSS px | Pass |
-| Core browser/PWA | `node scripts/smoke.mjs`: target workflow, diagnostics, add/reorder/remove/Undo, estimate/date recovery, persistence, offline reload, legal route | Pass |
-| Desktop/mobile/keyboard | 1440px and 390px no horizontal overflow; skip link is first Tab target and Enter reaches `main`; no page or console errors | Pass |
-| Accessibility | `npm run audit:a11y -- http://127.0.0.1:4173`: 0 axe violations (0 serious/critical); reduced motion, landmarks, title/lang/one h1, labels, focus styling remain in place | Pass |
-| Privacy | Browser request capture after load/reload: only `http://127.0.0.1:4173`; static scan found no remote fonts, APIs, analytics, or trackers | Pass |
-| Lighthouse attempt | Lighthouse 12.8.2 was attempted against the local production server with downloaded Chrome for Testing. Chrome could not accept the DevTools connection (`Unable to connect to Chrome`), so no score is claimed. Direct Playwright, axe, budget, semantic, layout, and PWA checks above passed. | Environment limitation |
+| Clean install | `npm ci` installed 60 packages; audit found 0 vulnerabilities. | Pass |
+| Unit/type/build | `npm test`: 14/14 Vitest tests passed. `npm run build` ran `tsc --noEmit` and Vite successfully. No separate lint command exists in this static TypeScript product. | Pass |
+| Artifact/budget | `dist/index.html` exists at root. JS 26,818 bytes / 9,290 gzip (≤200 KB); CSS 13,608 / 3,910 gzip (≤50 KB); no web fonts; hero WebPs 50,144 and 200,810 bytes (each ≤300 KB). | Pass |
+| Exact control regressions | Browser smoke at 390×844 measured both populated lane minute controls at least 44×44, reached Import JSON by Tab with a 3px visible focus outline, opened its native chooser with Enter, skipped the hidden file input, and reached Export JSON next. | Pass |
+| Core and recovery flow | Smoke loaded Data structures, diagnosed a skill, completed target work with optional work left, added with Enter, clamped both 10,001-minute additions, rejected and did not persist an invalid calendar-date import, persisted a valid map, and loaded the offline shell. | Pass |
+| Browser desktop/mobile/keyboard | Production-bundle Playwright checks at 1440×900 and 390×844 found no horizontal overflow, errors, or console errors; title/lang/one h1/one main/image alt passed. The skip link was first Tab stop and Enter produced `#main`; reduced motion was `1e-05s`. | Pass |
+| Accessibility | `npm run audit:a11y -- http://127.0.0.1:4173`: 0 violations, 0 serious/critical. | Pass |
+| Privacy | Runtime capture contained only `http://127.0.0.1:4173`; static review found no remote runtime scripts, fonts, APIs, analytics, or trackers. | Pass |
+| PWA/update | Local worker controlled the app; `registration.update()` completed with no waiting worker; cache was `prereq-sprint-map-v1`; the smoke offline reload retained `main`. | Pass |
+| Lighthouse mobile | Lighthouse 12.8.2 attached to a manually launched Playwright Chromium: Performance 99, Accessibility 100, Best Practices 100, SEO 100. | Pass |
 
-There is no separate lint script or package/consumer artifact for this Vite static web product; the build's TypeScript `--noEmit` check is the available type gate.
+There is no package/consumer artifact beyond this Vite static application, and no separate lint script; the TypeScript check in `npm run build` is the available type gate.
 
 ## Deployment and live verification
 
-Deployed `dist/` on 2026-08-27 to the existing Azure Static Web App `sf-prereq-sprint-map` (resource group `sociobot`, production environment) with:
+Deployed the existing static product with:
 
 ```sh
 swa deploy dist --env production --app-name sf-prereq-sprint-map --resource-group sociobot --swa-config-location dist --no-use-keychain
@@ -68,13 +55,14 @@ swa deploy dist --env production --app-name sf-prereq-sprint-map --resource-grou
 
 | Check | Live evidence | Result |
 | --- | --- | --- |
-| Deployment identity | `https://prereq-sprint-map.sociobot.in/` HTML SHA-256 `5842c2d0c30ace0f9aed20a469d3839ef015b22eb3a78da24cf9aaf416ddbc12`, equal to local `dist/index.html`; live JS, CSS, and worker hashes also exactly equal the local build | Pass |
-| Live core/PWA | `node scripts/smoke.mjs https://prereq-sprint-map.sociobot.in` passed, including the 390px regression and offline reload. The registered worker controls the page; `registration.update()` completes with no waiting worker and cache `prereq-sprint-map-v1`. | Pass |
-| Live accessibility | `npm run audit:a11y -- https://prereq-sprint-map.sociobot.in`: 0 axe violations (0 serious/critical) | Pass |
-| Live identity/privacy | Browser: title is correct, `lang=en`, one h1, one main, no page/console errors, the five targets retain their measured 44px minimums, and all runtime requests stay same-origin | Pass |
-| Response policy/caching | HTTPS response has HSTS, self-only CSP, `nosniff`, strict-origin referrer policy, and camera/microphone/geolocation denied. Hashed CSS is `public, max-age=31536000, immutable`; `sw.js` is `no-cache`; HTML is `public, must-revalidate, max-age=30`. | Pass |
+| Deployment identity | SHA-256 matched local `dist/` exactly for `index.html` (`b7adaf779f50…241666c08`), JS (`c8d3dd333fec…e8fd1e3d7`), CSS (`cf84b7b177ef…278246549`), worker (`0de01046b197…05d184794`), manifest, and both WebP assets. | Pass |
+| Live workflow and mobile regression | `node scripts/smoke.mjs https://prereq-sprint-map.sociobot.in` passed the exact 390px touch, Tab/focus, file-chooser, core flow, validation, persistence, and offline checks. | Pass |
+| Live accessibility | `npm run audit:a11y -- https://prereq-sprint-map.sociobot.in` reported 0 violations, including 0 serious/critical. | Pass |
+| Live browser/privacy | Playwright at desktop and 390px found no page or console errors, no overflow, correct title/lang/one h1/one main/alt text, and only `https://prereq-sprint-map.sociobot.in` runtime requests. | Pass |
+| Live PWA/update | The registered worker controls the page; `registration.update()` completed without a waiting worker; cache is `prereq-sprint-map-v1`. | Pass |
+| Live response policy/cache | HTTPS responses include HSTS, self-only CSP, `nosniff`, strict-origin referrer policy, and denied camera/microphone/geolocation. Hashed JS/CSS are `public, max-age=31536000, immutable`; `sw.js` is `no-cache`; HTML is `public, must-revalidate, max-age=30`. | Pass |
 
 ## Known limits
 
-- Plans stay in browser local storage and can be exported as JSON; there are no accounts, tracking, cloud sync, payments, or remote learner-data collection.
-- Examples are explicitly editable starting hypotheses, not universal prerequisite claims.
+- Plans stay only in browser local storage unless exported. There are no accounts, tracking, cloud sync, payments, or remote learner-data collection.
+- Templates are explicitly editable starting hypotheses, not universal prerequisite claims.
