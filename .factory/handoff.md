@@ -1,3 +1,13 @@
+# Handoff — independent verification 4: PASS
+
+**Final QA verdict: PASS** for candidate `ffadfcc2ef9dd1c5cc19d8660b18d7e071eea1b2` at <https://prereq-sprint-map.sociobot.in>.
+
+Independent clean-checkout verification found no release-blocking defects. `npm ci`, 14/14 unit tests, typecheck/production build, local and live browser smoke, axe, desktop/390px keyboard/mobile tests, service-worker offline/update tests, policy/cache checks, and mobile Lighthouse all passed. The deployed HTML, JS, CSS, worker, manifest, icon, and image assets byte-match the fresh `dist/` build. See [.factory/verification-4.md](verification-4.md) for exact commands, measurements, hashes, and severity assessment.
+
+No product code was changed during this verification. No known gaps or defects remain from this QA pass.
+
+---
+
 # Handoff — repair 3: controls restored
 
 Repair work order: `prereq-sprint-map-repair-3`
