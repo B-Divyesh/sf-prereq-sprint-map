@@ -54,7 +54,7 @@ swa deploy dist --env production --app-name sf-prereq-sprint-map --resource-grou
 | Check | Live evidence | Result |
 | --- | --- | --- |
 | Deployment identity | `https://prereq-sprint-map.sociobot.in/` HTML SHA-256 `5842c2d0c30ace0f9aed20a469d3839ef015b22eb3a78da24cf9aaf416ddbc12`, equal to local `dist/index.html`; live JS, CSS, and worker hashes also exactly equal the local build | Pass |
-| Live core/PWA | `node scripts/smoke.mjs https://prereq-sprint-map.sociobot.in` passed, including the 390px regression and offline reload | Pass |
+| Live core/PWA | `node scripts/smoke.mjs https://prereq-sprint-map.sociobot.in` passed, including the 390px regression and offline reload. The registered worker controls the page; `registration.update()` completes with no waiting worker and cache `prereq-sprint-map-v1`. | Pass |
 | Live accessibility | `npm run audit:a11y -- https://prereq-sprint-map.sociobot.in`: 0 axe violations (0 serious/critical) | Pass |
 | Live identity/privacy | Browser: title is correct, `lang=en`, one h1, one main, no page/console errors, the five targets retain their measured 44px minimums, and all runtime requests stay same-origin | Pass |
 | Response policy/caching | HTTPS response has HSTS, self-only CSP, `nosniff`, strict-origin referrer policy, and camera/microphone/geolocation denied. Hashed CSS is `public, max-age=31536000, immutable`; `sw.js` is `no-cache`; HTML is `public, must-revalidate, max-age=30`. | Pass |
