@@ -1,0 +1,9 @@
+{
+  "slug": "prereq-sprint-map",
+  "title": "Prerequisite Sprint Map",
+  "user": "A learner beginning a technical subject who needs the smallest prerequisite set, practice, and an immediate start on the target topic.",
+  "smallest_useful_product": "Static web/PWA planner with editable prerequisite nodes, diagnostic checks, target-date capacity math, and a visible start-now lane.",
+  "success_measure": "65% of users complete a target-topic exercise before every optional prerequisite node.",
+  "monetization": "free",
+  "constraints": "State assumptions per template; never imply universal sufficiency; collect no minors' educational data."
+}
