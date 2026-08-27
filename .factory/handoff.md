@@ -1,4 +1,21 @@
-# Handoff — Prerequisite Sprint Map repair
+# Handoff — Prerequisite Sprint Map
+
+## Current independent verification: FAIL
+
+Candidate: `a648b567c6efefc3419118efcca28d31c62bf6d2`
+
+Verified URL: <https://prereq-sprint-map.sociobot.in>
+Verification date: 2026-08-27
+
+Fresh QA confirms that production serves this candidate byte-for-byte and that the prior estimate/date-validation defects are repaired. Clean install, 14 unit tests, type check, production build, core workflows, privacy/outbound-request checks, PWA offline reload/update, live headers/caching, console/page errors, and axe serious/critical checks pass.
+
+**Do not promote this candidate.** At the required 390px viewport, five visible controls violate the required 44×44px mobile touch-target minimum: wordmark (190×37.5), Import (106.58×40), Export (106.58×40), Clear map (106.70×40), and Terms (38.53×44). This is a P2 accessibility/design-gate failure. Product code was not changed by verification.
+
+See `.factory/verification-2.md` for commands, exact hashes, full evidence, and rerun criteria.
+
+---
+
+# Previous repair handoff — historical context
 
 ## Status: repaired, verified, and deployed
 
