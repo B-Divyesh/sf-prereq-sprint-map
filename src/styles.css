@@ -69,7 +69,7 @@ img { display: block; max-width: 100%; }
   border-bottom: 2px solid var(--charcoal);
 }
 .site-header nav, footer nav { display: flex; align-items: center; gap: 24px; }
-.site-header nav a, footer nav a { min-height: 44px; display: inline-flex; align-items: center; }
+.site-header nav a, footer nav a, .wordmark { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; }
 .wordmark { font: 900 15px/1 "Arial Narrow", Arial, sans-serif; letter-spacing: .04em; text-decoration: none; text-transform: uppercase; }
 .wordmark span { color: var(--moss); font-family: ui-monospace, monospace; }
 
@@ -111,8 +111,8 @@ img { display: block; max-width: 100%; }
 .button:hover, .button-link:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--charcoal); }
 .button:active, .button-link:active { transform: translate(0); box-shadow: none; }
 .button.primary, .button-link.primary { display: inline-flex; align-items: center; justify-content: center; gap: 24px; color: var(--white); border-color: var(--moss-dark); background: var(--moss); }
-.button.compact { min-height: 40px; padding: 6px 10px; font-size: .78rem; }
-.text-button { min-height: 40px; padding: 4px 8px; border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 4px; }
+.button.compact { min-height: 44px; padding: 6px 10px; font-size: .78rem; }
+.text-button { min-height: 44px; padding: 4px 8px; border-color: transparent; background: transparent; text-decoration: underline; text-underline-offset: 4px; }
 .danger { color: var(--rust); }
 
 .workbench { width: min(1180px, calc(100% - 40px)); margin: 0 auto; border-top: 8px solid var(--charcoal); }

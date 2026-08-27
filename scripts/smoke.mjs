@@ -7,6 +7,20 @@ const errors = [];
 page.on('pageerror', (error) => errors.push(String(error)));
 page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
 await page.goto(url, { waitUntil: 'networkidle' });
+const requiredTouchTargets = [
+  ['wordmark/home link', '.wordmark'],
+  ['Import JSON label-button', 'label[for="import-file"]'],
+  ['Export JSON button', '[data-action="export"]'],
+  ['Clear map button', '[data-action="reset"]'],
+  ['Terms footer link', 'footer a[href="/terms"]'],
+];
+for (const [name, selector] of requiredTouchTargets) {
+  const box = await page.locator(selector).boundingBox();
+  if (!box || box.width < 44 || box.height < 44) {
+    const measured = box ? `${box.width.toFixed(2)}×${box.height.toFixed(2)}px` : 'not visible';
+    throw new Error(`${name} does not meet the 44×44px mobile touch-target minimum (${measured}).`);
+  }
+}
 await page.selectOption('#template', 'data-structures');
 await page.click('[data-action="load-template"]');
 if (await page.locator('.prereq-lane .node').count() !== 4) throw new Error('Template prerequisites did not load.');
@@ -64,4 +78,4 @@ await page.goto(new URL('/privacy', url).href, { waitUntil: 'networkidle' });
 if (await page.locator('h1').count() !== 1) throw new Error('Privacy route has invalid h1 count.');
 await browser.close();
 if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
-console.log('Browser smoke: template, diagnostics, bounded estimates, invalid-date import recovery, persistence, offline shell, and legal route passed.');
+console.log('Browser smoke: 390px touch targets, template, diagnostics, bounded estimates, invalid-date import recovery, persistence, offline shell, and legal route passed.');

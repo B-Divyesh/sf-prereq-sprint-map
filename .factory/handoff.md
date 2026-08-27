@@ -1,72 +1,53 @@
-# Handoff — Prerequisite Sprint Map
+# Handoff — Prerequisite Sprint Map repair 2
 
-## Current independent verification: FAIL
-
-Candidate: `a648b567c6efefc3419118efcca28d31c62bf6d2`
-
-Verified URL: <https://prereq-sprint-map.sociobot.in>
-Verification date: 2026-08-27
-
-Fresh QA confirms that production serves this candidate byte-for-byte and that the prior estimate/date-validation defects are repaired. Clean install, 14 unit tests, type check, production build, core workflows, privacy/outbound-request checks, PWA offline reload/update, live headers/caching, console/page errors, and axe serious/critical checks pass.
-
-**Do not promote this candidate.** At the required 390px viewport, five visible controls violate the required 44×44px mobile touch-target minimum: wordmark (190×37.5), Import (106.58×40), Export (106.58×40), Clear map (106.70×40), and Terms (38.53×44). This is a P2 accessibility/design-gate failure. Product code was not changed by verification.
-
-See `.factory/verification-2.md` for commands, exact hashes, full evidence, and rerun criteria.
-
----
-
-# Previous repair handoff — historical context
-
-## Status: repaired, verified, and deployed
-
-Repair work order: `prereq-sprint-map-repair-1`
-Base: `65dd64fdb5310487ed7809b8b01728786e4e76a9` (independent-report commit)
-Candidate identified by the report: `59c4838dbaa665a00531131b66b8bafe1fef5780`
-Date: 2026-08-27
+Repair work order: `prereq-sprint-map-repair-2`
+Verifier report: `.factory/verification-2.md` at `cedb31e14db3c6f2a3d4fedbb4c9e2892fe7905e`
+Candidate under repair: `a648b567c6efefc3419118efcca28d31c62bf6d2`
 
 ## What changed
 
-- Added one model-level estimate clamp for the declared 5–10,000 minute contract. New prerequisite and target-exercise flows, existing edits, and imports now all use it, so a new value of `10001` persists and contributes to capacity as `10000`.
-- Added strict `YYYY-MM-DD` calendar-date validation to import validation, including month bounds and leap years. Values such as `not-a-date`, `2026-02-30`, and non-zero-padded dates are rejected before assignment, local-storage persistence, or the import-success announcement.
-- Added model boundary regressions for the estimate limit, import estimate normalization, malformed/non-leap dates, and a valid leap day.
-- Extended the production browser smoke test to exercise both new-node limit paths and verify that an invalid imported date neither announces success nor overwrites saved data.
+- Repaired the five 390px touch targets reported by independent QA without changing the planner's behavior or visual direction.
+  - The wordmark/home link is now an inline-flex control with a 44px minimum height and width.
+  - Header and footer links have a 44px minimum width as well as height, so the short “Terms” link is reliably tappable.
+  - Compact file controls and the text-only “Clear map” action no longer override the global 44px control minimum with a 40px height.
+- Added an exact browser regression to `scripts/smoke.mjs`. At the required 390×844 viewport it measures the wordmark, Import JSON label-button, Export JSON, Clear map, and Terms link and fails below 44×44px before continuing through the existing user journey.
 
-Capacity arithmetic itself was not changed; its original day-count, availability, and completed/known-work behavior remains covered by tests.
+The concrete-and-moss system, local-first storage, data validation repairs, PWA behavior, keyboard behavior, responsive lane ordering, original image asset, and static Azure deployment class are unchanged.
 
-## Run and verify
+## Local verification
+
+Run from a clean checkout:
 
 ```sh
 npm ci
 npm test
 npm run build
 npm run preview -- --port 4173
-npm run audit:a11y -- http://127.0.0.1:4173
 node scripts/smoke.mjs
+npm run audit:a11y -- http://127.0.0.1:4173
 ```
 
-Required deploy directory: `dist/` (static site; `index.html` is at its root).
+Results on 2026-08-27:
 
-## Verification recorded
+| Check | Evidence | Result |
+| --- | --- | --- |
+| Clean install | `npm ci`: 59 packages installed; 0 vulnerabilities | Pass |
+| Unit/type/build | `npm test`: 14/14; `npm run build` (`tsc --noEmit` + Vite) | Pass |
+| Static output/budget | `dist/` contains root `index.html`; JS 26.70 KB raw / 9.27 KB gzip; CSS 13.61 KB raw / 3.91 KB gzip; no web fonts | Pass |
+| Exact mobile regression | 390px: wordmark 190×44; Import 106.58×44; Export 106.58×44; Clear 106.70×44; Terms 44×44 CSS px | Pass |
+| Core browser/PWA | `node scripts/smoke.mjs`: target workflow, diagnostics, add/reorder/remove/Undo, estimate/date recovery, persistence, offline reload, legal route | Pass |
+| Desktop/mobile/keyboard | 1440px and 390px no horizontal overflow; skip link is first Tab target and Enter reaches `main`; no page or console errors | Pass |
+| Accessibility | `npm run audit:a11y -- http://127.0.0.1:4173`: 0 axe violations (0 serious/critical); reduced motion, landmarks, title/lang/one h1, labels, focus styling remain in place | Pass |
+| Privacy | Browser request capture after load/reload: only `http://127.0.0.1:4173`; static scan found no remote fonts, APIs, analytics, or trackers | Pass |
+| Lighthouse attempt | Lighthouse 12.8.2 was attempted against the local production server with downloaded Chrome for Testing. Chrome could not accept the DevTools connection (`Unable to connect to Chrome`), so no score is claimed. Direct Playwright, axe, budget, semantic, layout, and PWA checks above passed. | Environment limitation |
 
-| Check | Result |
-| --- | --- |
-| Clean install | `npm ci` passed; 0 vulnerabilities reported |
-| Model regressions | `npm test`: 14/14 passed |
-| Type check and production build | `npm run build` passed and generated `dist/` |
-| New estimate boundaries | Browser smoke verified new prerequisite and exercise values of `10001` render as `10000` |
-| Invalid import recovery | Browser smoke verified `2026-02-30` has an explanatory error, no success copy, and no local-storage change |
-| Local browser/offline/PWA | `node scripts/smoke.mjs` passed: template, diagnostics, target completion, bounded estimates, invalid-date recovery, persistence, service-worker offline shell, and legal route |
-| Accessibility | Local axe: 0 violations (0 serious/critical); `verify-url.sh` found title, `lang=en`, one `h1`, main landmark, image alt text, no unlabeled buttons, and no console/page errors |
-| Standard static deploy | Azure Static Web Apps deployment `08c0fd6c-3299-4b9a-a331-c9dddb9689f0` succeeded to the production host; custom domain was `Ready` and HTTPS returned 200 |
-| Live repair regression | `https://prereq-sprint-map.sociobot.in` served the repaired `index-B0jfDiQ1.js`; live browser smoke passed both 10,001-minute clamps, invalid-date no-persistence/no-success recovery, PWA offline, and legal route |
-| Live accessibility / URL check | Live axe: 0 violations (0 serious/critical); `verify-url.sh` had no console/page errors and confirmed title, `lang=en`, one `h1`, main, image alt text, and labeled buttons |
-| Performance budget | Production JS: 26.70 KB raw / 9.27 KB gzip; CSS: 13.58 KB raw / 3.91 KB gzip; no web fonts. All are within the static-product budgets. |
-| Lighthouse | A current live run was attempted with the installed Chromium, but Lighthouse crashed its tab in this container before emitting a report. No score is claimed; the successful browser checks and measured bundle budgets above are the available release evidence. |
+There is no separate lint script or package/consumer artifact for this Vite static web product; the build's TypeScript `--noEmit` check is the available type gate.
 
-The repair does not change the concrete-and-moss visual system, original image provenance, keyboard handling, reduced-motion policy, privacy posture, or local-first PWA design.
+## Deploy and post-deploy verification
 
-## Known limits / next steps
+Deploy `dist/` to the existing Azure Static Web App `sf-prereq-sprint-map` in resource group `sociobot`, production environment. The deploy and live identity/response-policy evidence will be recorded here after the deployment completes.
 
-- No accounts, tracking, cloud sync, or remote learner data are used; maps remain in browser local storage and can be exported as JSON.
-- Templates remain explicitly bounded starting points, not universal prerequisite claims.
-- The successful live repair regression covers the two defects reported against the original candidate; routine release monitoring can repeat it on future changes.
+## Known limits
+
+- Plans stay in browser local storage and can be exported as JSON; there are no accounts, tracking, cloud sync, payments, or remote learner-data collection.
+- Examples are explicitly editable starting hypotheses, not universal prerequisite claims.
