@@ -1,0 +1,10 @@
+{
+  "name": "Prerequisite Sprint Map",
+  "short_name": "Sprint Map",
+  "description": "Build the smallest prerequisite sprint and start the real topic now.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f0e8",
+  "theme_color": "#f2f0e8",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

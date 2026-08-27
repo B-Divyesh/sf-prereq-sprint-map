@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://prereq-sprint-map.sociobot.in/sitemap.xml

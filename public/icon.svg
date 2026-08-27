@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Prerequisite Sprint Map">
+  <rect width="128" height="128" fill="#f2f0e8"/>
+  <path fill="#20231f" d="M14 21h72v22H14zm14 32h86v22H28zM14 85h70v22H14z"/>
+  <path fill="#335d39" d="M77 21h9v22H77zm20 32h17v22H97zM68 85h16v22H68z"/>
+  <path fill="#b9d45a" d="m84 93 19-19 11 11-30 30z"/>
+</svg>
